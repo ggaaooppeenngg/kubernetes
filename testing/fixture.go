@@ -467,11 +467,11 @@ func filterByNamespace(objs map[types.NamespacedName]runtime.Object, ns string) 
 	var res []runtime.Object
 
 	for _, obj := range objs {
-		acc, err := meta.Accessor(obj)
+		objMeta, err := meta.Accessor(obj)
 		if err != nil {
 			return nil, err
 		}
-		if ns != "" && acc.GetNamespace() != ns {
+		if ns != "" && objMeta.GetNamespace() != ns {
 			continue
 		}
 		res = append(res, obj)
@@ -479,12 +479,12 @@ func filterByNamespace(objs map[types.NamespacedName]runtime.Object, ns string) 
 
 	// Sort res to get deterministic order.
 	sort.Slice(res, func(i, j int) bool {
-		acc1, _ := meta.Accessor(res[i])
-		acc2, _ := meta.Accessor(res[j])
-		if acc1.GetNamespace() != acc2.GetNamespace() {
-			return acc1.GetNamespace() < acc2.GetNamespace()
+		objMeta1, _ := meta.Accessor(res[i])
+		objMeta2, _ := meta.Accessor(res[j])
+		if objMeta1.GetNamespace() != objMeta2.GetNamespace() {
+			return objMeta1.GetNamespace() < objMeta2.GetNamespace()
 		}
-		return acc1.GetName() < acc2.GetName()
+		return objMeta1.GetName() < objMeta2.GetName()
 	})
 	return res, nil
 }
